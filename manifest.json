@@ -1,0 +1,27 @@
+{
+  "name": "Redirector",
+  "version": "",
+  "description": "",
+  "author": "",
+  "short_name": "Redirector",
+  "background": {
+    "page": "background.html",
+    "persistent": true
+  },
+  "browser_action": {
+    "default_icon": "icons/icon16.png",
+    "default_popup": "popup.html"
+  },
+  "icons": {
+    "16": "icons/icon16.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  },
+  "manifest_version": 2,
+  "web_accessible_resources": [
+    "popup.html"
+  ],
+  "permissions": [
+    "tabs"
+  ]
+}

@@ -1,0 +1,15 @@
+{
+    "compilerOptions": {
+        "target": "ES2017",
+        "module": "commonjs",
+        "moduleResolution": "node",
+        "rootDir": "src",
+        "jsx": "react",
+        "lib": ["es2020", "dom"],
+        "experimentalDecorators": true,
+        "allowSyntheticDefaultImports": true,
+        "downlevelIteration": true,
+        "esModuleInterop": true
+    },
+    "exclude": ["tests", "lib", "jslib", "build", "node_modules"]
+}

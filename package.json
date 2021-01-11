@@ -1,0 +1,59 @@
+{
+  "name": "@dapplets/redirector-extension",
+  "version": "0.1.0",
+  "description": "",
+  "scripts": {
+    "build": "webpack --config webpack.prod.js",
+    "dev": "webpack --config webpack.dev.js",
+    "start": "webpack -w --config webpack.dev.js",
+    "clean": "rm -rf ./build && rm -rf ./lib"
+  },
+  "dependenices": {},
+  "devDependencies": {
+    "@types/chrome": "^0.0.122",
+    "@types/react": "^16.9.49",
+    "@types/react-dom": "^16.9.8",
+    "copy-webpack-plugin": "^6.1.0",
+    "css-loader": "^4.3.0",
+    "ethers": "^5.0.21",
+    "file-loader": "^6.1.0",
+    "node-sass": "^4.14.1",
+    "raw-loader": "^4.0.1",
+    "react": "^16.13.1",
+    "react-dom": "^16.13.1",
+    "resolve-url-loader": "^3.1.1",
+    "sass": "^1.26.10",
+    "sass-loader": "^10.0.2",
+    "style-loader": "^1.2.1",
+    "ts-loader": "^8.0.3",
+    "ts-node": "^9.0.0",
+    "typescript": "^4.0.2",
+    "url-loader": "^4.1.0",
+    "webextension-polyfill-ts": "^0.19.0",
+    "webpack": "^4.44.1",
+    "webpack-cli": "^3.3.12",
+    "webpack-merge": "^5.1.4"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dapplets/redirector-extension.git"
+  },
+  "keywords": [
+    "redirect"
+  ],
+  "author": "Dapplets Team <contact@dapplets.org>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/dapplets/redirector-extension/issues"
+  },
+  "homepage": "https://github.com/dapplets/redirector-extension#readme",
+  "files": [
+    "lib/**/*"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "dependencies": {
+    "csvtojson": "^2.0.10"
+  }
+}
