@@ -2,4 +2,7 @@ import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import { App } from './App';
 
-ReactDOM.render(<App />, document.querySelector('#app'));
+const url = new URL(window.location.href);
+const type = url.searchParams.get('type');
+
+ReactDOM.render(<App type={type} />, document.querySelector('#app'));
