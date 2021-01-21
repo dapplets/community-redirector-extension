@@ -120,7 +120,7 @@ export class Core {
             const notice = await resolver.getText('notice');
             const url = await resolver.getText('url');
 
-            const response = await fetch(url);
+            const response = await fetch(url, { cache: 'no-store' });
             const csv = await response.text();
             const json: Redirection[] = await csvtojson().fromString(csv);
 
