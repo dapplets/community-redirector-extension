@@ -1,7 +1,7 @@
 {
-  "name": "@dapplets/redirector-extension",
-  "version": "0.1.0",
-  "description": "",
+  "name": "@dapplets/community-redirector-extension",
+  "version": "1.0.0",
+  "description": "Redirector for user-generated resources.",
   "scripts": {
     "build": "webpack --config webpack.prod.js",
     "dev": "webpack --config webpack.dev.js",
@@ -36,7 +36,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/dapplets/redirector-extension.git"
+    "url": "git+https://github.com/dapplets/community-redirector-extension.git"
   },
   "keywords": [
     "redirect"
@@ -44,9 +44,9 @@
   "author": "Dapplets Team <contact@dapplets.org>",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/dapplets/redirector-extension/issues"
+    "url": "https://github.com/dapplets/community-redirector-extension/issues"
   },
-  "homepage": "https://github.com/dapplets/redirector-extension#readme",
+  "homepage": "https://github.com/dapplets/community-redirector-extension#readme",
   "files": [
     "lib/**/*"
   ],
