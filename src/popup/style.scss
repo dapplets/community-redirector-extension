@@ -1,0 +1,103 @@
+body {
+    padding: 15px 20px;
+    min-width: 384px;
+    min-height: 311px;
+    // color: #707070;
+    font-size: 14px;
+}
+
+.popup__link {
+    color: #2185d0;
+    cursor: pointer;
+    text-decoration: underline;
+}
+
+.popup__link:hover {
+    color: #0d71bb;
+}
+
+.popup__link_disabled {
+    color: initial;
+    cursor: initial;
+    text-decoration: initial;
+}
+
+.popup__link_disabled:hover {
+    color: initial;
+}
+
+.button {
+    padding: 7px 15px;
+    border: 1px solid #000;
+    border-radius: 4px;
+    color: #fff;
+    cursor: pointer;
+    outline: none;
+    margin-right: 8px;
+}
+
+.button:disabled {
+    background-color: #f5f5f5 !important;
+    border-color: #f5f5f5 !important;
+    color: #707070 !important;
+    cursor: default !important;
+}
+
+.button_color_green {
+    background-color: #21ba45;
+    border-color: #21ba45;
+}
+
+.button_color_green:hover {
+    background-color: #16ab39;
+    border-color: #16ab39;
+}
+
+.button_color_green:active {
+    background-color: #198f35;
+    border-color: #198f35;
+}
+
+.button_color_blue {
+    background-color: #2185d0;
+    border-color: #2185d0;
+}
+
+.button_color_blue:hover {
+    background-color: #0d71bb;
+    border-color: #0d71bb;
+}
+.button_color_blue:active {
+    background-color: #1a69a4;
+    border-color: #1a69a4;
+}
+
+.button_color_red {
+    background-color: #db2828;
+    border-color: #db2828;
+}
+
+.button_color_red:hover {
+    background-color: #d01919;
+    border-color: #d01919;
+}
+
+.button_color_red:active {
+    background-color: #b21e1e;
+    border-color: #b21e1e;
+}
+
+.button_basic {
+    background-color: #fff !important;
+}
+
+.button_basic.button_color_green {
+    color: #21ba45;
+}
+
+.message {
+    padding: 10px 15px;
+    border: 1px solid #e2d238;
+    border-radius: 8px;
+    background-color: #fffcdf;
+}
