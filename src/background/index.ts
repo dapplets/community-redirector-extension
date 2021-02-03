@@ -10,4 +10,29 @@ const core = new Core({
 browser.tabs.onActivated.addListener(({ tabId }) => core.checkTab(tabId));
 browser.tabs.onUpdated.addListener((tabId, changeInfo) => core.checkTab(tabId, changeInfo.status === 'loading'));
 
+browser.omnibox.onInputChanged.addListener((text, suggest) => {
+  if (text.toLowerCase().indexOf('trump') !== -1) {
+    setTimeout(() => {
+      suggest([
+        {
+          content: 'https://twitter.com/realDonaldTrump',
+          description: 'Donald Trump on Twitter'
+        },
+        {
+          content: 'https://www.facebook.com/DonaldTrump',
+          description: 'Donald Trump on Facebook'
+        },
+        {
+          content: 'https://instagram.com/realDonaldTrump',
+          description: 'Donald Trump on Instagram'
+        },
+        {
+          content: 'https://www.youtube.com/channel/UCAql2DyGU2un1Ei2nMYsqOA',
+          description: 'Donald Trump on YouTube'
+        }
+      ])
+    }, 500);
+  }
+})
+
 Object.assign(window, { core });

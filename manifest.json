@@ -4,6 +4,7 @@
   "description": "Redirector for user-generated resources.",
   "author": "Dapplets Team <contact@dapplets.org>",
   "short_name": "Redirector",
+  "omnibox": { "keyword" : "where" },
   "background": {
     "page": "background.html",
     "persistent": true
