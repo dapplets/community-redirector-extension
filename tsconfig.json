@@ -11,5 +11,5 @@
         "downlevelIteration": true,
         "esModuleInterop": true
     },
-    "exclude": ["tests", "lib", "jslib", "build", "node_modules"]
+    "exclude": ["tests", "lib", "jslib", "build", "node_modules", "assembly"]
 }

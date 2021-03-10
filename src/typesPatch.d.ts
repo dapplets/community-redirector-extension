@@ -1,0 +1,1 @@
+declare var CONTRACT_NAME: string;

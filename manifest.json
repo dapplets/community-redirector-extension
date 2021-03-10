@@ -27,5 +27,8 @@
   "manifest_version": 2,
   "permissions": [
     "tabs"
+  ],
+  "web_accessible_resources": [
+    "pairing.html"
   ]
 }

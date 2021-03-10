@@ -2,6 +2,9 @@ const path = require("path");
 const CopyWebpackPlugin = require("copy-webpack-plugin");
 const package = require('./package.json');
 const webpack = require("webpack");
+const fs = require('fs');
+
+const CONTRACT_NAME = fs.readFileSync('./neardev/dev-account', 'utf8');
 
 function modifyManifest(buffer) {
   const manifest = JSON.parse(buffer.toString());
@@ -88,8 +91,14 @@ module.exports = {
         }, {
           from: "src/popup/index.html",
           to: "popup.html"
+        }, {
+          from: "src/pairing/index.html",
+          to: "pairing.html"
         }
       ]
+    }),
+    new webpack.DefinePlugin({
+      CONTRACT_NAME: JSON.stringify(CONTRACT_NAME)
     })
   ]
 };

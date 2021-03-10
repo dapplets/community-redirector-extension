@@ -3,12 +3,22 @@
   "version": "1.0.0",
   "description": "Redirector for user-generated resources.",
   "scripts": {
-    "build": "webpack --config webpack.prod.js",
-    "dev": "webpack --config webpack.dev.js",
-    "start": "webpack -w --config webpack.dev.js",
-    "clean": "rm -rf ./build && rm -rf ./lib"
+    "build": "npm run build:contract:prod && npm run build:extension:prod",
+    "dev": "npm run build:contract:dev && npm run build:extension:dev",
+    "start": "npm run deploy:contract:dev && npm run start:extension",
+    "test": "yarn build:contract:dev && asp && jest",
+    "clean": "rm -rf ./build && rm -rf ./lib && rm -rf ./out",
+    "build:contract:prod": "asb",
+    "build:contract:dev": "asb --target debug",
+    "deploy:contract:prod": "npm run build:contract:prod && near deploy",
+    "deploy:contract:dev": "npm run build:contract:dev && near dev-deploy",
+    "build:extension:prod": "webpack --config webpack.prod.js",
+    "build:extension:dev": "webpack --config webpack.dev.js",
+    "start:extension": "webpack -w --config webpack.dev.js"
   },
-  "dependenices": {},
+  "dependenices": {
+    "near-api-js": "^0.38.0"
+  },
   "devDependencies": {
     "@types/chrome": "^0.0.122",
     "@types/react": "^16.9.49",
@@ -17,6 +27,8 @@
     "css-loader": "^4.3.0",
     "ethers": "^5.0.21",
     "file-loader": "^6.1.0",
+    "near-cli": "^1.5.4",
+    "near-sdk-as": "^2.2.4",
     "node-sass": "^4.14.1",
     "raw-loader": "^4.0.1",
     "react": "^16.13.1",
@@ -32,7 +44,8 @@
     "webextension-polyfill-ts": "^0.19.0",
     "webpack": "^4.44.1",
     "webpack-cli": "^3.3.12",
-    "webpack-merge": "^5.1.4"
+    "webpack-merge": "^5.1.4",
+    "borsh": "^0.3.1"
   },
   "repository": {
     "type": "git",
