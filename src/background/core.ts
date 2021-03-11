@@ -1,6 +1,8 @@
 import { browser } from "webextension-polyfill-ts";
 import * as ethers from 'ethers';
 import csvtojson from 'csvtojson';
+import * as nearAPI from 'near-api-js';
+import { CustomWalletConnection } from "../common/customWalletConnection";
 import { PopupType, Redirection } from '../common/types';
 
 enum LocalStorageKeys {
@@ -15,7 +17,11 @@ export class Core {
         private _config: {
             JSON_RPC_PROVIDER_URL: string,
             NETWORK: string,
-            ENS_ADDRESS: string
+            ENS_ADDRESS: string,
+            NEAR_NETWORK_ID: string,
+            NEAR_NODE_URL: string,
+            NEAR_WALLET_URL: string,
+            NEAR_HELPER_URL: string
         }
     ) { }
 
@@ -99,6 +105,74 @@ export class Core {
         return browser.tabs.update(tabId, { url: urlTo });
     }
 
+    public async createRedirection(fromUrl: string, toUrl: string) {
+        const near = await this._getNear();
+        const hash = ethers.utils.keccak256(ethers.utils.toUtf8Bytes(fromUrl));
+        const contract = near.contract as any;
+        const redirections = await contract.get({ key: hash });
+
+        if (!redirections.find(x => x === toUrl)) {
+            await contract.add({ key: hash, path: toUrl });
+        }
+    }
+
+    public async getRedirections(fromUrl: string) {
+        const near = await this._getNear();
+        const hash = ethers.utils.keccak256(ethers.utils.toUtf8Bytes(fromUrl));
+        const contract = near.contract as any;
+        const redirections = await contract.get({ key: hash });
+        return redirections;
+    }
+
+    public async signIn() {
+        return new Promise<void>(async (res, rej) => {
+            const near = await this._getNear();
+            await near.wallet.requestSignIn(
+                CONTRACT_NAME, // This global variable is injected by webpack. More details in webpack.common.js file.
+                'Community Redirector Extension',
+                chrome.extension.getURL('pairing.html'),
+                chrome.extension.getURL('pairing.html')
+            );
+
+            let isPairing = false;
+
+            browser.tabs.onUpdated.addListener(async (tabId) => {
+                const tab = await browser.tabs.get(tabId);
+                const { url } = tab;
+                if (url.indexOf(chrome.extension.getURL('pairing.html')) === 0) {
+                    if (isPairing) return;
+
+                    isPairing = true;
+
+                    const urlObject = new URL(url);
+                    const accountId = urlObject.searchParams.get('account_id');
+                    const publicKey = urlObject.searchParams.get('public_key');
+                    const allKeys = urlObject.searchParams.get('all_keys');
+
+                    // TODO: Handle situation when access key is not added
+                    if (accountId && publicKey) {
+                        near.wallet.completeSignIn(accountId, publicKey, allKeys);
+                        await new Promise((res, rej) => setTimeout(res, 1000));
+                        await browser.tabs.remove(tabId);
+                        res();
+                    }
+
+                    isPairing = false;
+                }
+            });
+        });
+    }
+
+    public async signOut() {
+        const near = await this._getNear();
+        near.wallet.signOut();
+    }
+
+    public async getCurrentAccount() {
+        const near = await this._getNear();
+        return near.currentUser;
+    }
+
     private async _getRedirections(url: string) {
         const externalData = await this._getExternalData();
         const hash = ethers.utils.keccak256(ethers.utils.toUtf8Bytes(url));
@@ -165,5 +239,36 @@ export class Core {
             wait: () => waitingPromise,
             close: () => browser.windows.remove(popupWindow.id)
         }
+    }
+
+    private async _getNear() {
+        const near = await nearAPI.connect({
+            networkId: this._config.NEAR_NETWORK_ID,
+            nodeUrl: this._config.NEAR_NODE_URL,
+            walletUrl: this._config.NEAR_WALLET_URL,
+            helperUrl: this._config.NEAR_HELPER_URL,
+            deps: { keyStore: new nearAPI.keyStores.BrowserLocalStorageKeyStore() }
+        });
+
+        const wallet = new CustomWalletConnection(near, null);
+
+        let currentUser: { accountId: string, balance: string } | null = null;
+        if (wallet.getAccountId()) {
+            currentUser = {
+                accountId: wallet.getAccountId(),
+                balance: (await wallet.account().state()).amount
+            };
+        }
+
+        const contract = await new nearAPI.Contract(
+            wallet.account(),
+            CONTRACT_NAME, // This global variable is injected by webpack. More details in webpack.common.js file.
+            {
+                viewMethods: ['get'],
+                changeMethods: ['add']
+            }
+        );
+
+        return { contract, currentUser, wallet };
     }
 }

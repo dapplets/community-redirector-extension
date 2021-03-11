@@ -1,10 +1,10 @@
 {
   "name": "Community Redirector",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Redirector for user-generated resources.",
   "author": "Dapplets Team <contact@dapplets.org>",
   "short_name": "Redirector",
-  "omnibox": { "keyword" : "where" },
+  "omnibox": { "keyword" : "redirect" },
   "background": {
     "page": "background.html",
     "persistent": true
