@@ -21,16 +21,16 @@ browser.omnibox.onInputChanged.addListener(debounce(async (text, suggest) => {
 
   const searchRedirections = await core.getRedirections(text);
 
-  suggest(searchRedirections.map(url => ({
-    content: JSON.stringify({ method: 'redirect', args: [tab.id, url] }),
-    description: `Redirect available to "${url}"<dim> - No messages yet</dim>`
+  suggest(searchRedirections.map(r => ({
+    content: JSON.stringify({ method: 'redirect', args: [tab.id, r.to_url] }),
+    description: `Redirect available to "${r.to_url}"${(r.message && r.message.length > 0) ? `<dim> - ${r.message}</dim>` : ''}`
   })));
 
   const currentRedirections = await core.getRedirections(tab.url);
 
-  suggest(currentRedirections.map(url => ({
-    content: JSON.stringify({ method: 'redirect', args: [tab.id, url] }),
-    description: `Redirect available to "${url}"<dim> - No messages yet</dim>`
+  suggest(currentRedirections.map(r => ({
+    content: JSON.stringify({ method: 'redirect', args: [tab.id, r.to_url] }),
+    description: `Redirect available to "${r.to_url}"${(r.message && r.message.length > 0) ? `<dim> - ${r.message}</dim>` : ''}`
   })));
 
   if (!currentRedirections.find(x => x === text)) {

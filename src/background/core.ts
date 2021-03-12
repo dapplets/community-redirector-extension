@@ -10,7 +10,7 @@ enum LocalStorageKeys {
 };
 
 export class Core {
-    private _externalData: { notice: string, redirections: Redirection[] } = null;
+    private _notice: string = null;
     private _pendingTabs = {};
 
     constructor(
@@ -36,7 +36,7 @@ export class Core {
             if (!url) return;
             if (this._isDisabled(url)) return;
 
-            const redirections = await this._getRedirections(url);
+            const redirections = await this.getRedirections(url);
 
             if (redirections.length > 0) {
                 const popup = await this._waitPopup();
@@ -75,8 +75,8 @@ export class Core {
         const tabId = tab.id;
         const url = tab.url;
 
-        const redirections = await this._getRedirections(url);
-        const notice = await this._getExternalData().then(x => x.notice);
+        const redirections = await this.getRedirections(url);
+        const notice = await this._getNotice();
         const disabled = this._isDisabled(url);
 
         return {
@@ -119,11 +119,17 @@ export class Core {
         }
     }
 
-    public async getRedirections(fromUrl: string): Promise<string[]> {
+    public async getRedirections(fromUrl: string): Promise<Redirection[]> {
         const near = await this._getNear();
         const hash = ethers.utils.keccak256(ethers.utils.toUtf8Bytes(fromUrl));
         const contract = near.contract as any;
-        const redirections = await contract.get({ key: hash });
+        const urls = await contract.get({ key: hash });
+        const redirections: Redirection[] = urls.map(x => ({
+            from_hash: hash,
+            to_url: x,
+            message: 'Messages not yet available'
+        }));
+
         return redirections;
     }
 
@@ -176,40 +182,20 @@ export class Core {
         return near.currentUser;
     }
 
-    private async _getRedirections(url: string) {
-        const externalData = await this._getExternalData();
-        const hash = ethers.utils.keccak256(ethers.utils.toUtf8Bytes(url));
-        const redirections = externalData.redirections.filter(x => x.from_hash === hash);
-        return redirections;
-    }
-
     private _isDisabled(url: string) {
         const list = JSON.parse(localStorage[LocalStorageKeys.DISABLED_URLS] ?? '[]');
         const isDisabled = !!list.find(x => x === url);
         return isDisabled;
     }
 
-    private async _getExternalData() {
-        if (!this._externalData) {
-
+    private async _getNotice() {
+        if (!this._notice) {
             const provider = new ethers.providers.JsonRpcProvider(this._config.JSON_RPC_PROVIDER_URL, this._config.NETWORK);
             const resolver = await provider.getResolver(this._config.ENS_ADDRESS);
-            const notice = await resolver.getText('notice');
-            const url = await resolver.getText('url');
-
-            const response = await fetch(url, { cache: 'no-store' });
-            const csv = await response.text();
-            const json: Redirection[] = await csvtojson().fromString(csv);
-
-            const data = {
-                notice: notice,
-                redirections: json
-            };
-
-            this._externalData = data;
+            this._notice = await resolver.getText('notice');
         }
 
-        return this._externalData;
+        return this._notice;
     }
 
     private async _waitPopup() {
