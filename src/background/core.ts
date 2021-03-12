@@ -107,6 +107,9 @@ export class Core {
 
     public async createRedirection(fromUrl: string, toUrl: string) {
         const near = await this._getNear();
+
+        if (!near.currentUser) await this.signIn();
+
         const hash = ethers.utils.keccak256(ethers.utils.toUtf8Bytes(fromUrl));
         const contract = near.contract as any;
         const redirections = await contract.get({ key: hash });
@@ -116,7 +119,7 @@ export class Core {
         }
     }
 
-    public async getRedirections(fromUrl: string) {
+    public async getRedirections(fromUrl: string): Promise<string[]> {
         const near = await this._getNear();
         const hash = ethers.utils.keccak256(ethers.utils.toUtf8Bytes(fromUrl));
         const contract = near.contract as any;

@@ -1,7 +1,6 @@
 import { browser } from "webextension-polyfill-ts";
 import { Core } from './core';
-import * as nearAPI from 'near-api-js';
-import { CustomWalletConnection } from "../common/customWalletConnection";
+import { debounce } from '../common/helpers';
 
 const core = new Core({
   ENS_ADDRESS: 'redirector.dapplet-base.eth',
@@ -16,29 +15,59 @@ const core = new Core({
 browser.tabs.onActivated.addListener(({ tabId }) => core.checkTab(tabId));
 browser.tabs.onUpdated.addListener((tabId, changeInfo) => core.checkTab(tabId, changeInfo.status === 'loading'));
 
-browser.omnibox.onInputChanged.addListener((text, suggest) => {
-  if (text.toLowerCase().indexOf('buidl') !== -1) {
-    setTimeout(() => {
-      suggest([
-        {
-          content: 'https://twitter.com/realDonaldTrump',
-          description: 'Add redirection from "buidl.near" to this webpage'
-        },
-        {
-          content: 'https://www.facebook.com/DonaldTrump',
-          description: 'Donald Trump on Facebook'
-        },
-        {
-          content: 'https://instagram.com/realDonaldTrump',
-          description: 'Donald Trump on Instagram'
-        },
-        {
-          content: 'https://www.youtube.com/channel/UCAql2DyGU2un1Ei2nMYsqOA',
-          description: 'Donald Trump on YouTube'
-        }
-      ])
-    }, 500);
+browser.omnibox.onInputChanged.addListener(debounce(async (text, suggest) => {
+  const [tab] = await browser.tabs.query({ active: true });
+  if (!tab || !tab.url) return;
+
+  const searchRedirections = await core.getRedirections(text);
+
+  suggest(searchRedirections.map(url => ({
+    content: JSON.stringify({ method: 'redirect', args: [tab.id, url] }),
+    description: `Redirect available to "${url}"<dim> - No messages yet</dim>`
+  })));
+
+  const currentRedirections = await core.getRedirections(tab.url);
+
+  suggest(currentRedirections.map(url => ({
+    content: JSON.stringify({ method: 'redirect', args: [tab.id, url] }),
+    description: `Redirect available to "${url}"<dim> - No messages yet</dim>`
+  })));
+
+  if (!currentRedirections.find(x => x === text)) {
+    suggest([{
+      content: JSON.stringify({ method: 'createRedirection', args: [tab.url, text] }),
+      description: `Create redirect to <match>${text}</match> from ${tab.url}`
+    }]);
   }
+
+  
+}, 250));
+
+browser.omnibox.onInputEntered.addListener(async (jsonCall) => {
+  try {
+    const call = JSON.parse(jsonCall);
+    if (!call.method) return;
+
+    switch (call.method) {
+      case "createRedirection": {
+        const message = prompt('Enter your message (will show up on redirect)');
+        if (message !== null) {
+          await core.createRedirection(call.args[0], call.args[1]);
+          alert(`The redirect is created.\nFrom: ${call.args[0]}\nTo: ${call.args[1]}`);
+        }
+        break;
+      }
+
+      case "redirect": {
+        await core.redirect(call.args[0], call.args[1]);
+        break;
+      }
+
+      default:
+        break;
+    }
+
+  } catch (_) { }  
 });
 
 Object.assign(window, { core });
