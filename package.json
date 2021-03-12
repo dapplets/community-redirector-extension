@@ -7,6 +7,7 @@
     "dev": "npm run build:contract:dev && npm run build:extension:dev",
     "start": "npm run deploy:contract:dev && npm run start:extension",
     "test": "yarn build:contract:dev && asp && jest",
+    "asp": "yarn build:contract:dev && asp",
     "clean": "rm -rf ./build && rm -rf ./lib && rm -rf ./out",
     "build:contract:prod": "asb",
     "build:contract:dev": "asb --target debug",
@@ -17,11 +18,11 @@
     "start:extension": "webpack -w --config webpack.dev.js"
   },
   "dependencies": {
+    "ethers": "^5.0.21",
     "near-api-js": "^0.38.0",
-    "regenerator-runtime": "^0.13.7",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
-    "ethers": "^5.0.21",
+    "regenerator-runtime": "^0.13.7",
     "webextension-polyfill-ts": "^0.19.0"
   },
   "devDependencies": {

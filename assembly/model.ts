@@ -1,4 +1,4 @@
-import { PersistentMap } from "near-sdk-as";
+import { PersistentMap, PersistentVector } from "near-sdk-as";
 
 @nearBindgen
 export class RedirectInfo {
@@ -6,3 +6,4 @@ export class RedirectInfo {
 }
 
 export const map = new PersistentMap<Uint8Array, RedirectInfo[]>("mm");
+export const keys = new PersistentVector<Uint8Array>("mm");
