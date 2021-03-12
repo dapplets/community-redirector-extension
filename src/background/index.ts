@@ -52,7 +52,7 @@ browser.omnibox.onInputEntered.addListener(async (jsonCall) => {
       case "createRedirection": {
         const message = prompt('Enter your message (will show up on redirect)');
         if (message !== null) {
-          await core.createRedirection(call.args[0], call.args[1]);
+          await core.createRedirection(call.args[0], call.args[1], message);
           alert(`The redirect is created.\nFrom: ${call.args[0]}\nTo: ${call.args[1]}`);
         }
         break;
