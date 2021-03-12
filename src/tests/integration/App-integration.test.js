@@ -20,23 +20,16 @@ beforeAll(async function() {
 });
 
 it('create one redirect and retrieve it', async () => {
-  const fromUrl = "a";
-  const toUrl = "b";
-
-  const hash = ethers.utils.keccak256(ethers.utils.toUtf8Bytes(fromUrl));
-  await contract.add({ key: hash, path: toUrl });
-  const redirections = await contract.get({ key: hash });
-  const expectedMessagesResult = [toUrl];
+  await contract.add({ key: "0x0", target: "a", message: "message" });
+  const redirections = await contract.get({ key: "0x0" });
+  const expectedMessagesResult = [{ targetURL: "a", message: "message" }];
   expect(redirections).toEqual(expectedMessagesResult);
 });
 
 it('create two more redirections and expect three total', async () => {
-  const fromUrl = "a";
+  await contract.add({ key: "0x0", target: "b", message: "message" });
+  await contract.add({ key: "0x0", target: "c", message: "message" });
 
-  const hash = ethers.utils.keccak256(ethers.utils.toUtf8Bytes(fromUrl));
-  await contract.add({ key: hash, path: "c" });
-  await contract.add({ key: hash, path: "d" });
-
-  const redirections = await contract.get({ key: hash });
+  const redirections = await contract.get({ key: "0x0" });
   expect(redirections.length).toEqual(3);
 });
