@@ -1,13 +1,11 @@
-import { PersistentMap } from 'near-sdk-core';
+import { RedirectInfo, map } from './model';
 
-const map = new PersistentMap<Uint8Array, string[]>("m");
-
-export function add(key: Uint8Array, path: string): void {
+export function add(key: Uint8Array, target: string, message:string): void {
     const value = map.get(key, [])!;
-    value.push(path);
+    value.push(new RedirectInfo(target,message));
     map.set(key, value);
 }
 
-export function get(key: Uint8Array): string[] {
+export function get(key: Uint8Array): RedirectInfo[] {
     return map.get(key, [])!;
 }
