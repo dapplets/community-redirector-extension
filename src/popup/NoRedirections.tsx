@@ -31,6 +31,6 @@ export class NoRedirections extends React.Component<Props, State> {
       <p>
         You can create your own redirect in our <span className='popup__link' onClick={() => window.open('https://github.com/dapplets/community-redirector-registry', '_blank')}>GitHub repository</span>
       </p>
-    </div>;
+    </div>
   }
 }

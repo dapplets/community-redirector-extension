@@ -6,6 +6,11 @@ body {
     font-size: 14px;
 }
 
+.loginBar {
+    padding-bottom: 15px;
+    display: flex;
+}
+
 .popup__link {
     color: #2185d0;
     cursor: pointer;
@@ -93,6 +98,10 @@ body {
 
 .button_basic.button_color_green {
     color: #21ba45;
+}
+
+.button_basic.button_color_blue {
+    color: #2185d0;
 }
 
 .message {

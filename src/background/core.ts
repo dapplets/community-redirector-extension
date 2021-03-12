@@ -139,8 +139,8 @@ export class Core {
             await near.wallet.requestSignIn(
                 CONTRACT_NAME, // This global variable is injected by webpack. More details in webpack.common.js file.
                 'Community Redirector Extension',
-                chrome.extension.getURL('pairing.html'),
-                chrome.extension.getURL('pairing.html')
+                chrome.extension.getURL('pairing.html?success=true'),
+                chrome.extension.getURL('pairing.html?success=false')
             );
 
             let isPairing = false;
@@ -154,19 +154,32 @@ export class Core {
                     isPairing = true;
 
                     const urlObject = new URL(url);
-                    const accountId = urlObject.searchParams.get('account_id');
-                    const publicKey = urlObject.searchParams.get('public_key');
-                    const allKeys = urlObject.searchParams.get('all_keys');
 
-                    // TODO: Handle situation when access key is not added
-                    if (accountId && publicKey) {
-                        near.wallet.completeSignIn(accountId, publicKey, allKeys);
+                    const success = urlObject.searchParams.get('success') === "true";
+
+                    if (success) {
+                        const accountId = urlObject.searchParams.get('account_id');
+                        const publicKey = urlObject.searchParams.get('public_key');
+                        const allKeys = urlObject.searchParams.get('all_keys');
+
+                        // TODO: Handle situation when access key is not added
+                        if (accountId && publicKey) {
+                            near.wallet.completeSignIn(accountId, publicKey, allKeys);
+                            await new Promise((res, rej) => setTimeout(res, 1000));
+                            await browser.tabs.remove(tabId);
+                            res();
+                        } else {
+                            await new Promise((res, rej) => setTimeout(res, 1000));
+                            await browser.tabs.remove(tabId);
+                            rej('No account_id and public_key params in callback URL');
+                        }
+
+                        isPairing = false;
+                    } else {
                         await new Promise((res, rej) => setTimeout(res, 1000));
                         await browser.tabs.remove(tabId);
-                        res();
+                        rej('Access denied');
                     }
-
-                    isPairing = false;
                 }
             });
         });

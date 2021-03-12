@@ -1,8 +1,9 @@
 import * as React from "react";
 import { Core } from "../background/core";
 import { PopupType, TabState } from "../common/types";
-import { Redirections } from './Redirections';
-import { NoRedirections } from './NoRedirections';
+import { Redirections } from "./Redirections";
+import { NoRedirections } from "./NoRedirections";
+import { LoginBar } from "./LoginBar";
 
 interface Props {
   type: PopupType;
@@ -15,12 +16,11 @@ interface State {
 }
 
 export class App extends React.Component<Props, State> {
-
   constructor(p) {
     super(p);
     this.state = {
       isLoading: true,
-      tabState: null
+      tabState: null,
     };
   }
 
@@ -28,8 +28,8 @@ export class App extends React.Component<Props, State> {
     const tabState = await this.props.core.getCurrentTabState();
     this.setState({
       isLoading: false,
-      tabState
-    })
+      tabState,
+    });
   }
 
   render() {
@@ -38,10 +38,30 @@ export class App extends React.Component<Props, State> {
 
     if (s.isLoading) return null;
 
-    if (s.tabState.redirections.length === 0) {
-      return <NoRedirections tabState={s.tabState}/>;
+    if (p.type === PopupType.WINDOW) {
+      if (s.tabState.redirections.length === 0) {
+        return <NoRedirections tabState={s.tabState} />;
+      } else {
+        return (
+          <Redirections tabState={s.tabState} core={p.core} type={p.type} />
+        );
+      }
     } else {
-      return <Redirections tabState={s.tabState} core={p.core} type={p.type} />;
+      if (s.tabState.redirections.length === 0) {
+        return (
+          <>
+            <LoginBar core={p.core} />
+            <NoRedirections tabState={s.tabState} />
+          </>
+        );
+      } else {
+        return (
+          <>
+            <LoginBar core={p.core} />
+            <Redirections tabState={s.tabState} core={p.core} type={p.type} />
+          </>
+        );
+      }
     }
   }
 }
