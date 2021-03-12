@@ -1,6 +1,5 @@
 import { browser } from "webextension-polyfill-ts";
 import * as ethers from 'ethers';
-import csvtojson from 'csvtojson';
 import * as nearAPI from 'near-api-js';
 import { CustomWalletConnection } from "../common/customWalletConnection";
 import { PopupType, Redirection } from '../common/types';
