@@ -104,17 +104,17 @@ export class Core {
         return browser.tabs.update(tabId, { url: urlTo });
     }
 
-    public async createRedirection(fromUrl: string, toUrl: string) {
+    public async createRedirection(fromUrl: string, toUrl: string, message: string) {
         const near = await this._getNear();
 
         if (!near.currentUser) await this.signIn();
 
         const hash = ethers.utils.keccak256(ethers.utils.toUtf8Bytes(fromUrl));
         const contract = near.contract as any;
-        const redirections = await contract.get({ key: hash });
+        const redirectInfos = await contract.get({ key: hash });
 
-        if (!redirections.find(x => x === toUrl)) {
-            await contract.add({ key: hash, path: toUrl });
+        if (!redirectInfos.find(x => x.targetURL === toUrl)) {
+            await contract.add({ key: hash, target: toUrl, message: message });
         }
     }
 
@@ -122,11 +122,11 @@ export class Core {
         const near = await this._getNear();
         const hash = ethers.utils.keccak256(ethers.utils.toUtf8Bytes(fromUrl));
         const contract = near.contract as any;
-        const urls = await contract.get({ key: hash });
-        const redirections: Redirection[] = urls.map(x => ({
+        const redirectInfos = await contract.get({ key: hash });
+        const redirections: Redirection[] = redirectInfos.map(x => ({
             from_hash: hash,
-            to_url: x,
-            message: 'Messages not yet available'
+            to_url: x.targetURL,
+            message: x.message
         }));
 
         return redirections;
